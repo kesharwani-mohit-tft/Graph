@@ -1,11 +1,10 @@
-//not calling api we have local data from Datas
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import moment from "moment";
 import "./ColumnChart.css"; // Import your custom CSS for styling
 import { Datas } from "../Datas";
 
-const Extra = () => {
+const DataAnalysis = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
@@ -32,8 +31,8 @@ const Extra = () => {
   console.log("API",data.data);
   console.log("Fronted",Datas);
 
-  const dates = Datas.map((data) =>
-    moment(data.createdAt.$date).format("DD/MM/YYYY")
+  const dates = data.data.map((data) =>
+    moment(data.createdAt).format("DD/MM/YYYY")
   );
   const uniqueDatesSet = new Set(dates);
   const uniqueDatesArray = Array.from(uniqueDatesSet);
@@ -43,10 +42,10 @@ const Extra = () => {
   const confidenceRange = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9,1];
 
   const totalAlerts = (dateData, confidenceRange) => {
-    const alert = Datas.reverse().filter(
+    const alert = data.data.reverse().filter(
       (i) =>
         i.confidence === confidenceRange &&
-        moment(i.createdAt.$date).format("DD/MM/YYYY") === dateData
+        moment(i.createdAt).format("DD/MM/YYYY") === dateData
     );
     return alert.length;
   };
@@ -98,4 +97,4 @@ const Extra = () => {
   );
 };
 
-export default Extra;
+export default DataAnalysis;
