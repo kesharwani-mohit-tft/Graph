@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import moment from "moment";
 import { Datas } from "../Datas";
+import { MultiSelect } from "primereact/multiselect";
 
 const DataAnalysis = () => {
   const [data, setData] = useState([]);
@@ -10,11 +11,15 @@ const DataAnalysis = () => {
   const [endDate, setEndDate] = useState("");
   const [actionId, setActionId] = useState("");
   const [cameraId, setCameraId] = useState("");
+  const [minConfidence, setMinConfidence] = useState("");
+  const [maxConfidence, setMaxConfidence] = useState("");
+
+  
 
   const fetchData = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:4500/statics?startDate=${startDate}&endDate=${endDate}&camera_Id=${cameraId}&action_Id=${actionId}&max_confidence=&min_confidence=`
+        `http://localhost:4500/statics?startDate=${startDate}&endDate=${endDate}&camera_Id=${cameraId}&action_Id=${actionId}&max_confidence=${maxConfidence}&min_confidence=${minConfidence}`
       );
       setData(response.data);
       setLoading(false);
@@ -67,6 +72,7 @@ const DataAnalysis = () => {
   return (
     <>
       <div className="flex">
+        {/* Right side */}
         <div className="w-9/12 bg-sky-100 pl-16 pt-2 pb-3">
           <div className="font-bold text-center text-2xl pb-3 flex justify-around">
             <div>Data Analysis</div>
@@ -113,13 +119,14 @@ const DataAnalysis = () => {
             })}
           </div>
         </div>
-
+        {/* Left side */}
         <div
-          className="w-3/12 bg-sky-50 just flex flex-col gap-1 items-center pt-10 rounded-2xl mt-2"
+          className="w-3/12 bg-sky-50 just flex flex-col gap-1 items-center pt-3 rounded-2xl mt-2"
           style={{ boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px" }}
         >
-          <div className="mb-8 text-center">
-            <div className="text-xl font-semibold ">Start date</div>
+          {/* start date */}
+          <div className="mb-3 text-center">
+            <div className="text-xl font-semibold ">Start Date</div>
             <input
               type="date"
               className="mt-4 px-10 py-1 rounded"
@@ -127,9 +134,9 @@ const DataAnalysis = () => {
               onChange={(e) => setStartDate(moment(e.target.value).format("YYYY-MM-DD"))}
             ></input>
           </div>
-
-          <div className=" mb-8 text-center">
-          <div className="font-semibold text-xl"> End date</div>
+          {/* end date */}
+          <div className=" mb-3 text-center">
+          <div className="font-semibold text-xl"> End Date</div>
             <input
               type="date"
               className="mt-4 px-10 py-1 rounded "
@@ -137,24 +144,45 @@ const DataAnalysis = () => {
               onChange={(e) => setEndDate(moment(e.target.value).format("YYYY-MM-DD"))}
             ></input>
           </div>
-
-          <div className=" mb-8 text-center">
+          {/* Action */}
+          <div className=" mb-3 text-center">
             <div className="text-xl font-semibold"> Action</div>
             <input
               type="number"
-              className="mt-4 px-6 py-1 rounded "
+              className="mt-2  px-6 py-1 rounded "
               value={actionId}
               onChange={(e) => setActionId(e.target.value)}
             ></input>
           </div>
-
-          <div className="mb-10 text-center">
+           {/* Camera */}
+          <div className="mb-3 text-center">
             <div className="text-xl font-semibold ">Camera</div>
             <input
               type="number"
-              className="mt-4  px-6 py-1 rounded "
+              className="mt-2  px-6 py-1 rounded "
               value={cameraId}
               onChange={(e) => setCameraId(e.target.value)}
+            ></input>
+          </div>
+           {/* min confidence */}
+           <div className="mb-3 text-center">
+            <div className="text-xl font-semibold ">Min Confidence</div>
+            <input
+              type="number"
+              className="mt-2  px-6 py-1 rounded "
+              value={minConfidence}
+              onChange={(e) => setMinConfidence(e.target.value)}
+            ></input>
+          </div>
+
+           {/* max confidence */}
+           <div className="mb-3 text-center">
+            <div className="text-xl font-semibold ">Max Confidence</div>
+            <input
+              type="number"
+              className="mt-2  px-6 py-1 rounded "
+              value={maxConfidence}
+              onChange={(e) => setMaxConfidence(e.target.value)}
             ></input>
           </div>
 
