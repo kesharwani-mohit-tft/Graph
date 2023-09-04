@@ -6,23 +6,28 @@ import { Datas } from "../Datas";
 const DataAnalysis = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [actionId, setActionId] = useState("");
+  const [cameraId, setCameraId] = useState("");
+
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:4500/statics?startDate=${startDate}&endDate=${endDate}&camera_Id=${cameraId}&action_Id=${actionId}&max_confidence=&min_confidence=`
+      );
+      setData(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const response = await axios.get(
-          "http://localhost:4500/statics?startDate=&endDate=&camera_Id=&action_Id=&max_confidence=&min_confidence="
-        );
-        setData(response.data);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setLoading(false);
-      }
-    }
-
     fetchData();
   }, []);
+
 
   if (loading) {
     return <p>Loading...</p>;
@@ -51,65 +56,115 @@ const DataAnalysis = () => {
     return alert.length;
   };
 
+  const handleSearch = () => {
+    console.log("Start Date:", startDate);
+    console.log("End Date:", endDate);
+    console.log("Action ID:", actionId);
+    console.log("Camera ID:", cameraId);  
+    fetchData();
+  };
+
   return (
     <>
-  
-    <div className="flex">
-       <div className="w-9/12 bg-sky-100">      
-      {/*1-Box ( confidenceHead and confidenceData )  */}
       <div className="flex">
-        {/* confidenceHead  (static)*/}
-        <span className="">
-          {confidenceRange.reverse().map((i) => {
-            return <span className="mt-6 ml-10 font-bold flex">{i}</span>;
-          })}
-        </span>
-        {/* confidenceData (dynamic) */}
-        {uniqueDatesArray.reverse().map((dateData, i) => {
-          return (
-            <span key={i} className="ml-10">
-              {confidenceRange.map((conRange, j) => {
-                return (               
-                  <span
-                    className={`mt-4 font-semibold flex ml-7 mr-7 rounded-full h-8 w-8 justify-center items-center ${totalAlerts(dateData, conRange)?"bg-sky-500 text-white":"bg-white"}`}
-                    key={j}
-                  >
-                    {totalAlerts(dateData, conRange)}
-                  </span>
-                 
+        <div className="w-9/12 bg-sky-100 pl-16 pt-2 pb-3">
+          <div className="font-bold text-center text-2xl pb-3 flex justify-around">
+            <div>Data Analysis</div>
+            <div className="flex">Total Alerts - {data.total}</div>
+          </div>
+          
+          {/*1-Box ( confidenceHead and confidenceData )  */}
+          <div className="flex">
+            {/* confidenceHead  (static)*/}
+            <span className="">
+              {confidenceRange.reverse().map((i) => {
+                return (
+                  <span className="mt-[19px] ml-10 font-bold flex">{i}</span>
                 );
               })}
             </span>
-          );
-        })}
+            {/* confidenceData (dynamic) */}
+            {uniqueDatesArray.reverse().map((dateData, i) => {
+              return (
+                <span key={i} className="ml-10">
+                  {confidenceRange.map((conRange, j) => {
+                    return (
+                      <span
+                        className={`mt-3 font-semibold flex ml-7 mr-7 rounded-full h-8 w-8 justify-center items-center ${
+                          totalAlerts(dateData, conRange)
+                            ? "bg-sky-500 text-white"
+                            : "bg-white"
+                        }`}
+                        key={j}
+                      >
+                        {totalAlerts(dateData, conRange)}
+                      </span>
+                    );
+                  })}
+                </span>
+              );
+            })}
+          </div>
+
+          {/*2-Box (Date)  */}
+          <div className="ml-24 mt-6 pb-4">
+            {uniqueDatesArray.map((i) => {
+              return <span className="pr-10 font-bold">{i}</span>;
+            })}
+          </div>
+        </div>
+
+        <div
+          className="w-3/12 bg-sky-50 just flex flex-col gap-1 items-center pt-10 rounded-2xl mt-2"
+          style={{ boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px" }}
+        >
+          <div className="mb-8 text-center">
+            <div className="text-xl font-semibold ">Start date</div>
+            <input
+              type="date"
+              className="mt-4 px-10 py-1 rounded"
+              value={startDate}
+              onChange={(e) => setStartDate(moment(e.target.value).format("YYYY-MM-DD"))}
+            ></input>
+          </div>
+
+          <div className=" mb-8 text-center">
+          <div className="font-semibold text-xl"> End date</div>
+            <input
+              type="date"
+              className="mt-4 px-10 py-1 rounded "
+              value={endDate}
+              onChange={(e) => setEndDate(moment(e.target.value).format("YYYY-MM-DD"))}
+            ></input>
+          </div>
+
+          <div className=" mb-8 text-center">
+            <div className="text-xl font-semibold"> Action</div>
+            <input
+              type="number"
+              className="mt-4 px-6 py-1 rounded "
+              value={actionId}
+              onChange={(e) => setActionId(e.target.value)}
+            ></input>
+          </div>
+
+          <div className="mb-10 text-center">
+            <div className="text-xl font-semibold ">Camera</div>
+            <input
+              type="number"
+              className="mt-4  px-6 py-1 rounded "
+              value={cameraId}
+              onChange={(e) => setCameraId(e.target.value)}
+            ></input>
+          </div>
+
+          <button className="bg-green-600 text-white font-semibold px-12 py-2 rounded-lg"     onClick={handleSearch}>
+            Search
+          </button>
+        </div>
       </div>
-
-      {/*2-Box (Date)  */}
-      <div className="ml-24 mt-6 pb-4">
-        {uniqueDatesArray.map((i) => {
-          return (
-            <span className="pr-10 font-bold">{i}</span>
-          );
-        })}
-      </div>
-       </div>
-
-       <div className="w-3/12 bg-sky-50 just flex flex-col items-center pt-10 rounded-2xl mt-1"  style={{ boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px" }}>
-        <div>startDate</div>                                                                               
-        <div>endDate</div>
-        <div>Action</div>
-        <div>Camera</div>
-       </div>
-
-    </div>
     </>
   );
 };
 
 export default DataAnalysis;
-
-
-
-
-
-
